@@ -1,16 +1,20 @@
+
+
 #loginDisplay, #signupDisplay {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-color: rgba(242, 242, 242, 0.9); /* faint white box */
+    background-color: rgba(69, 69, 69, 0.9); /* faint white box */
     width: 600px;
     margin: auto;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* soft shadow */
+    box-shadow: 0 0 20px rgba(214, 214, 214, 0.543); /* soft shadow */
     border-radius: 10px;
     padding: 40px;
     margin: 100px auto 0 auto;
+    font-weight: 900;
+    font-family: 'fantasy';
 }
 
 #error{
@@ -24,7 +28,8 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
+    box-shadow: 0 0 20px rgba(8, 8, 8, 0.3);
 }
 
 button:hover {
@@ -34,13 +39,176 @@ button:hover {
 body{
     font-size: 20px;
     text-align: center;
+    background-color: #232323;
+    color: whitesmoke;
 }
 
 input[type="text"], input[type="password"],
 textarea {
     font-size: 18px;     /* makes the text inside bigger */
-    width: 60%;          /* makes the box wider (you can use px too) */
+    width: 550px;          /* makes the box wider (you can use px too) */
     height: 40px;         /* makes the box taller (optional for <input>) */
     padding: 10px;        /* adds spacing inside the box */
     box-sizing: border-box; /* ensures padding doesn't overflow the width */
+    border-radius: 10px;
 }
+
+#movieResults {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.movie-card {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* faint white background */
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    text-align: center;
+    width: 200px;
+    padding: 10px;
+}
+
+.movie-card a {
+    text-decoration: none;
+    color: inherit; /* keep normal text color */
+    display: block;
+}
+
+.movie-card img {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.movie-card:hover img {
+    transform: scale(1.05);
+}
+
+#movieName {
+    font-size: 18px;
+    margin: 10px 0 5px;
+}
+
+.movie-details{
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.movie-details img{
+    width: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.movie-details p {
+    flex: 1 1 300px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.movie-details strong {
+    color: #ffd700; /* Gold highlight for labels */
+}
+
+.body-full-details{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #262626;
+    color: #eee;
+    margin: 0;
+    padding: 20px;
+}
+
+.title-full-details{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.rating-high, .rating-medium, .rating-low {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: black; /* Make text black for contrast */
+    font-size: 16px;
+}
+
+.rating-high {
+    background-color: #00e676; /* Light Green */
+}
+
+.rating-medium {
+    background-color: #ffb74d; /* Light Orange */
+}
+
+.rating-low {
+    background-color: #ff5252; /* Light Red */
+}
+
+
+.nav {
+    background-color: #1e1e1e;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+    transition: color 0.3s, background-color 0.3s, padding 0.3s;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.nav a:hover {
+    background-color: #333333;
+    color: #ffd700; /* gold hover effect */
+}
+
+.logout-link {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.logout-link:hover {
+    background-color: #e60000;
+}
+
+#logoutBtn{
+    color: rgb(210, 141, 141);
+}
+
+#logoutBtn:hover{
+    color: rgb(231, 32, 32);
+}
+
+
+
+
+

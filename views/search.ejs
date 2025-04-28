@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body> 
+
+    <%- include("partials/nav.ejs") %>
+
+    <h1> Search </h1> 
+
+    <form action="/search" method="GET">
+        <input type="text" name="title" placeholder="Enter titles of any movies, TV shows, video games, etc..." required>
+        <button type="submit">Search</button>
+    </form>
+
+    <br><br>
+
+    <div id="movieResults">
+        <% if (movies) { %>
+            <% movies.forEach(movie => { %>
+                <% if (movie.Poster !== 'N/A') { %>
+                    <div class="movie-card">
+                        
+                        <a href="/full-details/<%= movie.imdbID %>">
+                            <h2 id="movieName"><%= movie.Title %> (<%= movie.Year %>)</h2>
+                            <img src="<%= movie.Poster %>" alt="Movie Poster not Found" onerror="this.onerror=null; this.src='/img/noimage.png';">
+                        </a>
+
+                    </div>
+                <% } %>
+            <% }); %>
+        <% } else if (error) { %>
+            <h2 style="color: red;"><%= error %></h2>
+        <% } %>
+    </div>
+
+
+    
+</body>
+</html>

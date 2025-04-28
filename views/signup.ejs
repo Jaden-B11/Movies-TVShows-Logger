@@ -12,11 +12,11 @@
 
         <h1>Create Account</h1>
 
-        <form action="/signup" method="POST">
+        <form id="signup-form" action="/signup" method="POST">
             Username:
             <input type="text" name="username" required> <br><br>
             Password:
-            <input type="password" name="password" required> <br><br>
+            <input id="password" type="password" name="password" required> <span id="error-message"></span> <br><br>
 
             Re-enter Password:
             <input type="password" name="password2" required> <br>
@@ -38,6 +38,9 @@
         </form>
 
     </div>
+
+    
+    <script src="/js/script.js"></script>
 
 </body>
 </html>
