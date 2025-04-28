@@ -1,0 +1,27 @@
+{
+  "name": "movies-tvshows-logger",
+  "version": "1.0.0",
+  "description": "The logger for movies &amp; TV shows is a personal media tracking website for logged-in users to keep track of the TV shows and movies they watch.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaden-B11/Movies-TVShows-Logger.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jaden-B11/Movies-TVShows-Logger/issues"
+  },
+  "homepage": "https://github.com/Jaden-B11/Movies-TVShows-Logger#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "mysql2": "^3.14.1"
+  }
+}
