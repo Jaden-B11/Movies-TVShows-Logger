@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= movie.Title %> Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="body-full-details">
+
+    <%
+    function getRatingColor(rating) {
+        rating = parseFloat(rating);
+        if (rating >= 8.0) {
+            return 'rating-high'; // green
+        } else if (rating >= 6.0) {
+            return 'rating-medium'; // orange
+        } else {
+            return 'rating-low'; // red
+        }
+    }
+    %>
+
+
+    <%- include("partials/nav.ejs") %>
+
+    <h1 class="title-full-details"><%= movie.Title %> (<%= movie.Year %>)</h1>
+
+    <div class="movie-details">
+        <img src="<%= movie.Poster !== 'N/A' ? movie.Poster : '/images/no-poster.png' %>" alt="Poster" >
+        <p><strong>Plot:</strong> <%= movie.Plot %></p>
+        <p><strong>Genre:</strong> <%= movie.Genre %></p>
+        <p><strong>Director:</strong> <%= movie.Director %></p>
+        <p><strong>Top performers:</strong> <%= movie.Actors %></p>
+        <p><strong>IMDB Rating:</strong> 
+            <span class="<%= getRatingColor(movie.imdbRating) %>">
+              <%= movie.imdbRating %>
+            </span>
+        </p>
+          
+    </div>
+
+</body>
+</html>
