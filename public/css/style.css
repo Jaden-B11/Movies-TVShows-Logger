@@ -17,6 +17,20 @@
     font-family: 'fantasy';
 }
 
+#backtoSearchBtn{
+    background: #c0a40a; 
+    padding: 10px 20px; 
+    color: black; 
+    border-radius: 8px; 
+    text-decoration: none;
+}
+
+#backtoSearchBtn:hover{
+    background-color: rgba(109, 104, 2, 0.79);
+    transform: translateY(-5px);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.6);
+}
+
 #error{
     color: red;
 }

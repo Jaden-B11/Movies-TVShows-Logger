@@ -73,7 +73,7 @@ app.get('/home', isAuthenticated, (req, res) => {
         // // Sort movies by year in descending order
         // allMovies.sort((a, b) => parseInt(b.Year) - parseInt(a.Year));
 
-        res.render('search.ejs', { movies: allMovies, error: null });
+        res.render('search.ejs', { movies: allMovies, error: null, searchTerm });
     } catch (error) {
         console.error(error);
         res.status(500).send("Error fetching movie data");
@@ -159,12 +159,14 @@ app.post('/signup', async (req, res) => {
 
  app.get('/full-details/:id', isAuthenticated, async (req, res) => {
     const currentID = req.params.id;
+    const searchTitle = req.query.title;
+    console.log(searchTitle);
     const apiKey = "e3a66506";
     
     const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&i=${currentID}&plot=full`);
     const movie = await response.json(); 
 
-    res.render('fulldetails.ejs', { movie });
+    res.render('fulldetails.ejs', { movie, searchTitle });
  });
 
 
