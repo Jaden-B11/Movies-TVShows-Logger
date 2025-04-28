@@ -26,7 +26,7 @@
     <h1 class="title-full-details"><%= movie.Title %> (<%= movie.Year %>)</h1>
 
     <div class="movie-details">
-        <img src="<%= movie.Poster !== 'N/A' ? movie.Poster : '/images/no-poster.png' %>" alt="Poster" >
+        <img src="<%= movie.Poster %>" alt="Poster" onerror="this.onerror=null; this.src='/img/noimage.png';" >
         <p><strong>Plot:</strong> <%= movie.Plot %></p>
         <p><strong>Genre:</strong> <%= movie.Genre %></p>
         <p><strong>Director:</strong> <%= movie.Director %></p>
@@ -38,6 +38,13 @@
         </p>
           
     </div>
+    <br>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a id="backtoSearchBtn" href="/search?title=<%= searchTitle %>">⬅ Back to Search</a>
+    </div>
+
+    <br><br>
 
 </body>
 </html>
