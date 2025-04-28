@@ -53,6 +53,11 @@ app.post('/signup', async (req, res) => {
         let password = req.body.password;
         let password2 = req.body.password2;
 
+        if (password.length < 3) {
+            res.render('signup.ejs', {"error":"Password must be at least 4 characters long"});
+            return;
+        }
+
         if (password != password2){
             res.render('signup.ejs', {"error":"Passwords do not match"});
             return;
