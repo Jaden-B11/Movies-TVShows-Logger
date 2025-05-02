@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Season <%= seasonNumber %> Episodes</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="body-full-details">
+
+  <%- include("partials/nav.ejs") %>
+
+  <h1 class="title-full-details">Episodes - Season <%= seasonNumber %></h1>
+
+  <div class="episode-list">
+    <% episodes.forEach(episode => { %>
+      <div class="episode-card">
+        <h3>Ep <%= episode.number %>: <%= episode.name %></h3>
+        <p><strong>Air Date:</strong> <%= episode.airdate %></p>
+        <p><strong>Runtime:</strong> <%= episode.runtime %> min</p>
+        <% if (episode.image && episode.image.medium) { %>
+          <img src="<%= episode.image.medium %>" alt="Episode image" style="width: 100%; max-width: 300px; border-radius: 8px;" />
+        <% } %>
+        <p><%= episode.summary ? episode.summary.replace(/(<([^>]+)>)/gi, '') : 'No description available.' %></p>
+      </div>
+    <% }) %>
+  </div>
+
+  <div class="pagination-controls">
+    <% if (seasonNumber > 1) { %>
+      <a class="media-button" href="/viewEpisodes/<%= tvMazeId %>?season=<%= seasonNumber - 1 %>&title=<%= searchTitle %>">⬅ Previous</a>
+    <% } %>
+
+    <% if (seasonNumber < totalSeasons) { %>
+      <a class="media-button" href="/viewEpisodes/<%= tvMazeId %>?season=<%= seasonNumber + 1 %>&title=<%= searchTitle %>">Next ➡</a>
+    <% } %>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <a id="backtoSearchBtn" href="/full-details/<%= tvMazeId %>?title=<%= searchTitle %>">⬅ Back to Series</a>
+  </div>
+
+</body>
+</html>

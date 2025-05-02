@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Media</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="body-full-details">
+
+    <%- include("partials/nav.ejs") %>
+
+        <h1 class="title-full-details">
+            <%= movie.Title %> (<%= movie.Year %>)
+        </h1>
+
+        <div class="movie-details">
+            <img src="<%= movie.Poster %>" alt="Poster" onerror="this.onerror=null; this.src='/img/noimage.png';">
+            <p><strong>Plot:</strong>
+                <%= movie.Plot %>
+            </p>
+
+            <div class="form-wrapper">
+                <form class="addMediaForm" action="/addMedia/<%= movie.imdbID %>" method="POST">
+                    <input type="hidden" name="imdbId" value="<%= movie.imdbID %>">
+                    <input type="hidden" name="movieName" value="<%= movie.Title %>">
+                    <input type="hidden" name="movieImage" value="<%= movie.Poster %>">
+
+                    <div class="form-group">
+                        <label for="movieStatus">Status:</label>
+                        <select name="movieStatus" id="movieStatus">
+                            <option value="">Select Status</option>
+                            <option value="Watching">Watching</option>
+                            <option value="Planned to Watch">Planned to Watch</option>
+                            <option value="Completed">Completed</option>
+                            <option value="On-Hold">On-Hold</option>
+                            <option value="Dropped">Dropped</option>
+                        </select>
+                    </div>
+
+                    <br>
+
+                    <div class="form-group">
+                        <label for="comments">Comments:</label>
+                        <textarea name=te"comments" id="comments" rows="5"></textarea>
+                    </div>
+
+                    <br>
+
+                    <button class="media-button" type="submit">Add Media</button>
+                </form>
+            </div>
+        </div>
+        <br>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a id="backtoSearchBtn" href="/full-details/<%= movie.imdbID %>?title=<%=searchTitle %>">⬅ Back to
+                Search</a>
+        </div>
+
+        <br><br>
+</body>
+
+</html>
