@@ -30,13 +30,20 @@
         <p><strong>Plot:</strong> <%= movie.Plot %></p>
         <p><strong>Genre:</strong> <%= movie.Genre %></p>
         <p><strong>Director:</strong> <%= movie.Director %></p>
-        <p><strong>Top performers:</strong> <%= movie.Actors %></p>
+        <p><strong>Top Performers:</strong> <%= movie.Actors %></p>
         <p><strong>IMDB Rating:</strong> 
             <span class="<%= getRatingColor(movie.imdbRating) %>">
-              <%= movie.imdbRating %>
+            <%= movie.imdbRating %>
             </span>
         </p>
-          
+        <div class="media-button-group">
+            <% if (movie.Type === 'series') { %>
+                <a class="media-button" href="/viewEpisodes/<%= movie.imdbID %>?title=<%=searchTitle %>">View Episodes</a>
+                <a class="media-button" href="/addSeries/<%= movie.imdbID %>?title=<%=searchTitle %>">Add Media</a>
+            <% } else { %>
+                <a class="media-button" href="/addMedia/<%= movie.imdbID %>?title=<%=searchTitle %>">Add Media</a>
+            <% } %>
+        </div>          
     </div>
     <br>
 
