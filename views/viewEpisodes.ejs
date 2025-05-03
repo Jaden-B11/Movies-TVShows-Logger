@@ -1,43 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Season <%= seasonNumber %> Episodes</title>
+  <title>
+    <%= episodes[0]._links.show.name %>'s Season <%= seasonNumber %> Episodes
+  </title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body class="body-full-details">
 
   <%- include("partials/nav.ejs") %>
 
-  <h1 class="title-full-details">Episodes - Season <%= seasonNumber %></h1>
+    <% 
+      function formatDate(dateStr) { 
+        const date=new Date(dateStr); 
+        if (isNaN(date)) {
+          return 'N/A'; 
+        }
+        return date.toLocaleDateString('en-US', { year: 'numeric' , month: 'long' , day: 'numeric' }); 
+      }
+    %>
 
-  <div class="episode-list">
-    <% episodes.forEach(episode => { %>
-      <div class="episode-card">
-        <h3>Ep <%= episode.number %>: <%= episode.name %></h3>
-        <p><strong>Air Date:</strong> <%= episode.airdate %></p>
-        <p><strong>Runtime:</strong> <%= episode.runtime %> min</p>
-        <% if (episode.image && episode.image.medium) { %>
-          <img src="<%= episode.image.medium %>" alt="Episode image" style="width: 100%; max-width: 300px; border-radius: 8px;" />
-        <% } %>
-        <p><%= episode.summary ? episode.summary.replace(/(<([^>]+)>)/gi, '') : 'No description available.' %></p>
+
+      <h1 class="title-full-details">
+        <%= episodes[0]._links.show.name %>'s Season <%= seasonNumber %> Episodes
+      </h1>
+
+      <div class="episode-list">
+        <% for (let episode of episodes) { %>
+          <div class="episode-card">
+            <h3><strong>Episode <%= episode.number %>:</strong> <%= episode.name %></h3>
+
+            <div class="episode-content">
+              <% if (episode.image && episode.image.medium) { %>
+                <img src="<%= episode.image.medium %>" alt="Episode image" class="episode-image">
+                <% } %>
+                  <p class="episode-summary">
+                    <strong>Summary:</strong>
+                    <%= episode.summary ? episode.summary.replace(/(<([^>]+)>)/gi, '') : 'No description available.' %>
+                  </p>
+            </div>
+
+            <div class="episode-meta">
+              <p><strong>Air Date:</strong>
+                <%= formatDate(episode.airdate) %>
+              </p>
+              <p><strong>Runtime:</strong>
+                <%= episode.runtime && episode.runtime !=='N/A' ? episode.runtime + ' minutes' : 'N/A' %>
+              </p>
+            </div>
+
+            <button type="button" class="media-button episodeLink" data-show-tvmaze-id="<%= episode._links.show.href %>"
+              data-episode-tvmaze-id="<%= episode.id %>" data-episode-number="<%= episode.number %>" data-episode-name="<%= episode.name %>"
+              data-episode-image="<%= episode.image?.original || episode.image?.medium || '' %>"
+              data-episode-summary="<%= episode.summary ? episode.summary.replace(/(<([^>]+)>)/gi, '') : 'No summary available.' %>">
+              Add Episode
+            </button>
+
+          </div>
+          <% } %>
       </div>
-    <% }) %>
-  </div>
 
-  <div class="pagination-controls">
-    <% if (seasonNumber > 1) { %>
-      <a class="media-button" href="/viewEpisodes/<%= tvMazeId %>?season=<%= seasonNumber - 1 %>&title=<%= searchTitle %>">⬅ Previous</a>
-    <% } %>
+      <div id="episodeModal" class="custom-modal hidden">
+        <div class="custom-modal-content episode-card">
+          <span class="custom-close-button" id="closeModal">&times;</span>
+          <h3>
+            <strong>Episode <span id="modalEpisodeNumber"></span>:</strong> <span id="modalEpisodeName"></span>
+          </h3>
+          
+          <form method="POST" action="/addEpisode?imdbId=<%= currentId %>" id="addEpisodeForm">
+            <input type="hidden" name="showTvMazeLink" id="formShowTvMazeLink">
+            <input type="hidden" name="tvMazeId" id="formEpisodeTvMazeId">
+            <input type="hidden" name="episodeName" id="formEpisodeName">
+            <input type="hidden" name="episodeImage" id="formEpisodeImage">
+      
+            <div class="episode-content">
+              <div class="episode-modal-image" style="flex: 0 0 50%;">
+                <img id="episodeImage" class="episode-image" alt="Episode Image" style="width: 100%; border-radius: 8px;">
+              </div>
+              <div class="episode-modal-summary" style="flex: 1;">
+                <p><strong>Summary:</strong> <span id="episodeSummary"></span></p>
+              </div>
+            </div>
+      
+            <div class="episode-modal-meta" style="margin-top: 1rem;">
+              <label for="status"><strong class="episodeStatusLabel">Status:</strong></label><br>
+              <select id="status" name="status" class="episodeStatus">
+                <option value="">Select Status</option>
+                <option value="Watching">Watching</option>
+                <option value="Planned to Watch">Planned to Watch</option>
+                <option value="Completed">Completed</option>
+                <option value="On-Hold">On-Hold</option>
+                <option value="Dropped">Dropped</option>
+              </select>
+            </div>
+            <br>
+      
+            <div class="episode-modal-meta" style="margin-top: 1rem;">
+              <label for="comments"><strong class="episodeCommentsLabel">Comments:</strong></label>
+              <textarea id="comments" name="comments" class="episodeComments" placeholder="Add your notes..."></textarea>
+            </div>
+            <br>
+      
+            <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px">
+              <button type="submit" class="media-button">Add TV Episode</button>
+              <button type="button" class="media-button" id="cancelModal">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>      
 
-    <% if (seasonNumber < totalSeasons) { %>
-      <a class="media-button" href="/viewEpisodes/<%= tvMazeId %>?season=<%= seasonNumber + 1 %>&title=<%= searchTitle %>">Next ➡</a>
-    <% } %>
-  </div>
+      <div class="pagination-controls" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;">
+        <% if (seasonNumber> 1) { %>
+          <a class="media-button"
+            href="/viewEpisodes/<%= currentId %>?season=<%= seasonNumber - 1 %>&title=<%= searchTitle %>">⬅ Previous
+            Season</a>
+          <% } %>
 
-  <div style="text-align: center; margin-top: 20px;">
-    <a id="backtoSearchBtn" href="/full-details/<%= tvMazeId %>?title=<%= searchTitle %>">⬅ Back to Series</a>
-  </div>
+            <% for (let i=1; i <=totalSeasons; i++) { %>
+              <a class="media-button <%= i === seasonNumber ? 'active-season' : '' %>"
+                href="/viewEpisodes/<%= currentId %>?season=<%= i %>&title=<%= searchTitle %>">
+                <%= i %>
+              </a>
+              <% } %>
 
+                <% if (seasonNumber < totalSeasons) { %>
+                  <a class="media-button"
+                    href="/viewEpisodes/<%= currentId %>?season=<%= seasonNumber + 1 %>&title=<%= searchTitle %>">Next
+                    Season ➡</a>
+                  <% } %>
+      </div>
+
+
+      <div style="text-align: center; margin-top: 20px;">
+        <a id="backtoSearchBtn" href="/full-details/<%= currentId %>?title=<%= searchTitle %>">⬅ Back to
+          SeriesDescription</a>
+      </div>
+
+      <script src="/js/script.js"></script>
 </body>
+
 </html>
