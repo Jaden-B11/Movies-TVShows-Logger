@@ -11,3 +11,7 @@ const interval = setInterval(() => {
       clearInterval(interval); // stop once "Track." is highlighted
     }
 }, 1000)
+
+function hideDiv() {
+  document.getElementById('searchSuggestions').style.display = 'none';
+}
