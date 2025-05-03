@@ -72,7 +72,7 @@ button:hover {
 body{
     font-size: 20px;
     text-align: center;
-    background-color: #3f3f3f;
+    background-color: #363636;
     color: whitesmoke;
 }
 
@@ -101,7 +101,7 @@ textarea {
     text-align: center;
     width: 200px;
     padding: 5px;
-    background-color: #333333;
+    background-color: #232323;
 }
 
 .movie-card a {
