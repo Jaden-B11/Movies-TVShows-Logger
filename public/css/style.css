@@ -140,6 +140,11 @@ button {
   box-shadow: 0 0 20px rgba(8, 8, 8, 0.3);
 }
 
+hr {
+  border: none;
+  border-top: 2px solid black;
+}
+
 button:hover {
   background-color: #218838; /* darker green on hover */
 }
@@ -216,6 +221,7 @@ textarea {
     flex-wrap: wrap;
     gap: 20px;
     align-items: center;
+}
 
 .movie-details img {
   width: 300px;
@@ -280,9 +286,9 @@ textarea {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.nav a {
+.nav a, .nav a:visited, .nav a:link {
   text-decoration: none;
-  color: #ffffff;
+  color: #ffffff !important;
   font-weight: bold;
   font-size: 20px;
   transition: color 0.3s, background-color 0.3s, padding 0.3s;
@@ -292,7 +298,7 @@ textarea {
 
 .nav a:hover {
   background-color: #333333;
-  color: #ffd700; /* gold hover effect */
+  color: #ffd700; 
 }
 
 .logout-link {
@@ -388,3 +394,25 @@ h1 {
     gap: -5px;
     margin-left: 20px;
   }
+
+  .nav a,
+  .nav a:link,
+  .nav a:visited,
+  .nav a:active,
+  .nav a:focus {
+    color: white !important;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+  
+  .nav a:hover {
+    color: #ffd700 !important; /* gold hover effect */
+    background-color: #333333 !important;
+  }
+  
+
+  

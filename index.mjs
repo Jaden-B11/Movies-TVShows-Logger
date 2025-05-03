@@ -55,7 +55,7 @@ app.get('/search', isAuthenticated, async (req, res) => {
     let allMovies = [];
 
     if (!searchTerm) {
-        return res.render('search.ejs', { movies: null, error: null });
+        return res.render('search.ejs', { movies: null, error: null, searchTerm: null });
     }
 
     try {

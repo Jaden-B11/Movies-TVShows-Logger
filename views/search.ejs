@@ -7,13 +7,16 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body> 
+    
 
     <%- include("partials/nav.ejs") %>
 
+    <hr>
+
     <h1> Search </h1> 
 
-    <form action="/search" method="GET">
-        <input type="text" name="title" placeholder="Enter titles of any movies, TV shows, video games, etc..." required>
+    <form action="/search" method="GET" onsubmit="hideDiv()">
+        <input type="text" name="title" placeholder="Here" required>
         <button type="submit">Search</button>
     </form>
 
@@ -38,7 +41,20 @@
         <% } %>
     </div>
 
+    <% if (!searchTerm) { %>
+    <div id="searchSuggestions" style="display: block;">
+        <p>Enter titles of any movies or TV shows like Happy Gilmore, Breaking Bad, etc... </p>
+        <br><hr>
+        <img src="/img/BackroundFiller.png" alt="" width="200px">
+    </div>
+    <% } %>
 
+    <script>
+        function hideDiv() {
+          document.getElementById("searchSuggestions").style.display = "none";
+        }
+      </script>
+      
     
 </body>
 </html>
