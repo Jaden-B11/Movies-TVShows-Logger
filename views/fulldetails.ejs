@@ -39,10 +39,8 @@
         <div class="media-button-group">
             <% if (movie.Type === 'series') { %>
                 <a class="media-button" href="/viewEpisodes/<%= movie.imdbID %>?title=<%=searchTitle %>">View Episodes</a>
-                <a class="media-button" href="/addSeries/<%= movie.imdbID %>?title=<%=searchTitle %>">Add Media</a>
-            <% } else { %>
-                <a class="media-button" href="/addMedia/<%= movie.imdbID %>?title=<%=searchTitle %>">Add Media</a>
             <% } %>
+            <a class="media-button" href="/addMedia/<%= movie.imdbID %>?title=<%= searchTitle %>">Add Media</a>
         </div>          
     </div>
     <br>

@@ -168,23 +168,24 @@ app.get('/full-details/:id', isAuthenticated, async (req, res) => {
     res.render('fulldetails.ejs', { movie, searchTitle });
 });
 
-app.get('/addSeries/:id', isAuthenticated, async (req, res) => {
-    const currentId = req.params.id;
-
-    const response = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${currentId}`);
-    const media = await response.json();
-    res.render('addSeries.ejs', { media });
-});
-
 app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     let userId = req.session.userId;
-    let tvMazeId = req.body.tvMazeId;
+    let imdbId = req.body.imdbId;
     let showName = req.body.showName;
     let showImage = req.body.showImage;
     let showStatus = req.body.showStatus;
     let comments = req.body.comments;
 
-    let sql = `INSERT INTO Movies 
+    const searchTitle = req.body.searchTitle;
+
+    // use imdbId to get tvMazeId
+    const response = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${imdbId}`);
+    const data = await response.json();
+
+    // gets tvMazeId from api response
+    const tvMazeId = parseInt(data.id);
+
+    let sql = `INSERT INTO Shows 
                 (userId, tvMazeId, showName, showImage, showStatus, comments) 
                 VALUES 
                 (?, ?, ?, ?, ?, ?)`;
@@ -192,12 +193,67 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     let sqlParams = [userId, tvMazeId, showName, showImage, showStatus, comments];
     const [rows] = await conn.query(sql, sqlParams);
 
-    res.redirect("/full-details/:id");
+    res.redirect(`/full-details/${imdbId}?title=${searchTitle}`);
+});
+
+app.post('/addEpisode', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    const imdbId = req.query.imdbId;
+
+    const { showTvMazeLink, tvMazeId, episodeName, episodeImage, status, comments } = req.body;
+
+    // for getting tv show TVMaze id
+    const url = showTvMazeLink;
+    const match = url.match(/\/shows\/(\d+)$/);
+    const showTvMazeId = match ? parseInt(match[1]) : null;
+
+
+    // Checks if the user already added the show before
+    const [existingShows] = await conn.query(
+        'SELECT * FROM Shows WHERE tvMazeId = ? AND userId = ?',
+        [showTvMazeId, userId]
+    );
+
+    // Inserts the show for the user with the same status as what they added in the episode 
+    // if show doesn't exist in database
+    if (existingShows.length === 0) {
+        const apiKey = "e3a66506";
+        const omdbResponse = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&i=${imdbId}&plot=full`);
+        const showData = await omdbResponse.json();
+
+        const showName = showData.Title;
+        const showImage = showData.Poster;
+
+        const insertShowSql = `
+          INSERT INTO Shows (userId, tvMazeId, showName, showImage, showStatus)
+          VALUES (?, ?, ?, ?, ?)
+        `;
+        const showParams = [userId, showTvMazeId, showName, showImage, status];
+        await conn.query(insertShowSql, showParams);
+    }
+
+    // Gets showId for user to help with inserting episode entry
+    const [shows] = await conn.query(
+        'SELECT showId FROM Shows WHERE tvMazeId = ? AND userId = ?',
+        [showTvMazeId, userId]
+    );
+
+    const showId = shows[0].showId;
+
+    // Finally inserts episode into database
+    const insertEpisodeSql = `
+        INSERT INTO Episodes (showId, userId, tvMazeId, episodeName, episodeImage, episodeStatus, comments)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+    const episodeParams = [showId, userId, tvMazeId, episodeName, episodeImage, status, comments];
+    await conn.query(insertEpisodeSql, episodeParams);
+
+    res.redirect(`/viewEpisodes/${imdbId}`);
 });
 
 app.get('/addMedia/:id', isAuthenticated, async (req, res) => {
     const currentId = req.params.id;
-    const searchTitle = req.params.searchTitle;
+    const searchTitle = req.query.title;
     const apiKey = "e3a66506";
 
     const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&i=${currentId}&plot=full`);
@@ -213,6 +269,8 @@ app.post('/addMedia/:id', isAuthenticated, async (req, res) => {
     let movieStatus = req.body.movieStatus;
     let comments = req.body.comments;
 
+    const searchTitle = req.body.searchTitle;
+
     let sql = `INSERT INTO Movies 
                 (userId, imdbId, movieName, movieImage, movieStatus, comments) 
                 VALUES 
@@ -221,7 +279,7 @@ app.post('/addMedia/:id', isAuthenticated, async (req, res) => {
     let sqlParams = [userId, imdbId, movieName, movieImage, movieStatus, comments];
     const [rows] = await conn.query(sql, sqlParams);
 
-    res.redirect(`/full-details/${imdbId}`,);
+    res.redirect(`/full-details/${imdbId}?title=${searchTitle}`);
 });
 
 app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
@@ -231,9 +289,11 @@ app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
     const response = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${currentId}`);
     const media = await response.json();
 
-    const tvMazeId = media.id
+    if (!media || !media.id) {
+        return res.status(404).send("TV show not found for this IMDb ID.");
+    }
 
-    // console.log(tvMazeId);
+    const tvMazeId = media.id;
 
     // naruto error where the episode names are in japanese since the english translation is in the alternative lists
     // 
@@ -243,16 +303,16 @@ app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
 
     const seasons = {};
     allEpisodes.forEach(ep => {
-        const season = ep.Season || 1;
+        const season = ep.season || 1;
         if (!seasons[season]) seasons[season] = [];
         seasons[season].push(ep);
     });
 
-    const totalSeasons = Object.keys(seasons).length;
+    const totalSeasons = Math.max(...Object.keys(seasons).map(Number));
     const episodes = seasons[selectedSeason] || [];
 
     res.render('viewEpisodes', {
-        tvMazeId,
+        currentId,
         seasonNumber: selectedSeason,
         totalSeasons,
         episodes,
