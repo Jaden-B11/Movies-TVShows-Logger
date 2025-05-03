@@ -49,12 +49,12 @@ app.get('/home', isAuthenticated, (req, res) => {
 });
 
 app.get('/search', isAuthenticated, async (req, res) => {
-    const searchTerm = req.query.title;
+    const searchTerm = req.query.title?.trim(); // Optional chaining and trimming whitespace
     const apiKey = "e3a66506";
-    const maxPages = 5; // Adjust as needed
+    const maxPages = 5;
     let allMovies = [];
 
-    if (!searchTerm) {
+    if (!searchTerm || searchTerm.length === 0) {
         return res.render('search.ejs', { movies: null, error: null, searchTerm: null });
     }
 
@@ -66,12 +66,9 @@ app.get('/search', isAuthenticated, async (req, res) => {
             if (data.Response === "True") {
                 allMovies = allMovies.concat(data.Search);
             } else {
-                break; // No more results
+                return res.render('search.ejs', { movies: null, error: 'No matching results, Try again!', searchTerm: null }); // Search term exists, but no results
             }
         }
-
-        // // Sort movies by year in descending order
-        // allMovies.sort((a, b) => parseInt(b.Year) - parseInt(a.Year));
 
         res.render('search.ejs', { movies: allMovies, error: null, searchTerm });
     } catch (error) {
@@ -79,6 +76,7 @@ app.get('/search', isAuthenticated, async (req, res) => {
         res.status(500).send("Error fetching movie data");
     }
 });
+
 
 
 
