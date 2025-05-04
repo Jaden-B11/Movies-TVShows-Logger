@@ -66,3 +66,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+
+const editModal = document.getElementById('editMediaModal');
+const openEditButtons = document.querySelectorAll('.openEditModal');
+const closeEditBtn = document.getElementById('closeEditModal');
+
+const formMediaId = document.getElementById('editMediaId');
+const formMediaType = document.getElementById('editMediaType');
+const formStatus = document.getElementById('editStatus');
+const formComments = document.getElementById('editComments');
+
+openEditButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    formMediaId.value = button.dataset.id;
+    formMediaType.value = button.dataset.type;
+    formStatus.value = button.dataset.status;
+    formComments.value = button.dataset.comments;
+
+    editModal.classList.remove('hidden');
+  });
+});
+
+closeEditBtn?.addEventListener('click', () => {
+  editModal.classList.add('hidden');
+});
+

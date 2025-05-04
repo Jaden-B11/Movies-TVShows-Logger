@@ -316,6 +316,7 @@ textarea {
   color: #ffd700;
 }
 
+
 .logout-link {
   background-color: #ff4d4d;
   color: white;
@@ -577,3 +578,104 @@ h1 {
 .hidden {
   display: none;
 }
+
+.media-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-left: 50px;
+}
+
+.media-card {
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    width: 160px;
+    text-align: center;
+}
+
+.media-card .comments{
+    color: #c0a40a;
+    width: 150px;
+}
+
+.media-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.statusTitle {
+    text-align: left;
+    margin-left: 40px;
+    font-family: 'Franklin Gothic Medium', 'Arial Black', sans-serif;
+    color: #ffd700; /* gold */
+    font-size: 28px;
+    letter-spacing: 1px;
+
+    /* subtle glowing gold text-shadow */
+    text-shadow: 0 0 4px #b8860b, 0 0 8px #ffd700;
+
+    /* optional background stroke effect */
+    -webkit-text-stroke: 0.3px #000; /* faint outline */
+    text-stroke: 0.3px #000;
+}
+
+#NoMedia{
+    text-align: left;
+    margin-left: 75px;
+    font-family: 'Franklin Gothic Medium'
+}
+
+#EditMedia{
+    font-family: 'Franklin Gothic Medium', 'Arial Black', sans-serif;
+    color: #ffd700; /* gold */
+    font-size: 28px;
+    letter-spacing: 1px;
+
+    /* subtle glowing gold text-shadow */
+    text-shadow: 0 0 4px #b8860b, 0 0 8px #ffd700;
+
+    /* optional background stroke effect */
+    -webkit-text-stroke: 0.3px #000; /* faint outline */
+    text-stroke: 0.3px #000;
+}
+
+#editStatus {
+    width: 200px;
+    padding: 10px 10px;
+    height: 40px;
+    font-size: 18px;
+    border-radius: 6px;
+    border: 1px solid #666;
+    background-color: #ffffff;
+  }
+
+  #editComments{
+    width: 400px;
+    height: 100px;
+  }
+  
+
+  /*Color coordinated status titles
+  /* .statusTitle.watching {
+    color: #ffd700;
+    text-shadow: 0 0 4px #b8860b, 0 0 8px #ffd700;
+  }
+  
+  .statusTitle.planned {
+    color: #f89e37;
+    text-shadow: 0 0 4px #ffa024, 0 0 8px #ffbf00;
+  }
+  
+  .statusTitle.completed {
+    color: #a2ff51;
+    text-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
+  }
+  
+  .statusTitle.dropped {
+    color: #e26958bc;
+    text-shadow: 0 0 5px rgba(255, 76, 76, 0.5);
+  } */
+
+
+
