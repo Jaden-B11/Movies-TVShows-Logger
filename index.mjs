@@ -44,8 +44,53 @@ app.get('/', (req, res) => {
     res.render('login.ejs');
 });
 
-app.get('/home', isAuthenticated, (req, res) => {
-    res.render('home.ejs');
+app.get('/home', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+
+    let sql = `SELECT * FROM Movies WHERE userId = ?`;
+    let sql2 = `SELECT * FROM Shows WHERE userId = ?`;
+
+    const [movies] = await conn.query(sql, [userId]);
+    const [shows] = await conn.query(sql2, [userId]);
+
+    const grouped = {
+        watching: { movies: [], shows: [] },
+        planned: { movies: [], shows: [] },
+        completed: { movies: [], shows: [] },
+        dropped: { movies: [], shows: [] },
+    };
+
+    console.log(shows);
+    console.log(movies);
+
+    for (let movie of movies) {
+        const status = movie.movieStatus?.toLowerCase();
+        if (status === "watching") {
+            grouped.watching.movies.push(movie);
+        } else if (status === "planned to watch") {
+            grouped.planned.movies.push(movie);
+        } else if (status === "completed") {
+            grouped.completed.movies.push(movie);
+        } else if (status === "dropped") {
+            grouped.dropped.movies.push(movie);
+        }
+    }
+    
+    for (let show of shows) {
+        const status = show.showStatus?.toLowerCase();
+        if (status === "watching") {
+            grouped.watching.shows.push(show);
+        } else if (status === "planned to watch") {
+            grouped.planned.shows.push(show);
+        } else if (status === "completed") {
+            grouped.completed.shows.push(show);
+        } else if (status === "dropped") {
+            grouped.dropped.shows.push(show);
+        }
+    }
+
+
+    res.render('home.ejs', { grouped });
 });
 
 app.get('/search', isAuthenticated, async (req, res) => {
@@ -150,7 +195,7 @@ app.post('/login', async (req, res) => {
         // req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
         req.session.Name = rows[0].username;
         req.session.userId = rows[0].userId;
-        res.render('home.ejs', { Name: req.session.Name });
+        res.redirect('/home');
     } else {
         res.render('login.ejs', { "error": "Username and password do not match" });
     }
@@ -320,6 +365,25 @@ app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
     });
 });
 
+app.post('/editMedia', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+
+    const mediaId = req.body.mediaId;
+    const mediaType = req.body.mediaType;
+    const status = req.body.status;
+    const comments = req.body.comments;
+
+    let sql;
+    if(mediaType == 'movie'){
+        sql = `UPDATE Movies SET movieStatus = ?, comments = ? WHERE movieId = ? and userId = ?`
+    } else if (mediaType == 'show'){
+        sql = `UPDATE Shows SET showStatus = ?, comments = ? WHERE showId = ? AND userId = ?`;
+    }
+    let sqlParams = [status, comments, mediaId, userId]
+    await conn.query(sql, sqlParams);
+
+    res.redirect('/home');
+});
 
 function isAuthenticated(req, res, next) {
     if (req.session.userAuthenticated) {
