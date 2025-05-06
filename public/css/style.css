@@ -337,6 +337,17 @@ textarea {
   color: rgb(231, 32, 32);
 }
 
+#saveChanges{
+  background-color: #ffe551;  
+  outline: none;
+  border-color: #ffe54f; 
+  box-shadow: 0 0 8px rgba(255, 244, 182, 0.751);
+}
+
+#saveChanges:hover{
+  background-color: #00ff377e;
+}
+
 .logo {
   position: absolute;
   top: 5px;
@@ -609,8 +620,9 @@ h1 {
     margin-left: 40px;
     font-family: 'Franklin Gothic Medium', 'Arial Black', sans-serif;
     color: #ffd700; /* gold */
-    font-size: 28px;
+    font-size: 40px;
     letter-spacing: 1px;
+    font-weight: bold;
 
     /* subtle glowing gold text-shadow */
     text-shadow: 0 0 4px #b8860b, 0 0 8px #ffd700;
@@ -654,28 +666,76 @@ h1 {
     width: 400px;
     height: 100px;
   }
+
+  hr.stylish-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #222, #333, #222);
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.15); /* soft gold glow */
+    width: 100%;
+    margin-left: -22px;
+    border-radius: 2px;
+  }
+
+  hr.stylish-divider2 {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #222, #333, #222);
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.15); /* soft gold glow */
+    width: 80%;
+    border-radius: 2px;
+  }
+
+  #deleteMediaForm .delete-button {
+    background-color: #b13333;
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.785);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #deleteMediaForm .delete-button:hover {
+    background-color: #ff0000;
+  }
+
+  .flash-success {
+    background-color: #dff0d8;
+    color: #3c763d;
+    padding: 12px 1px;
+    margin: 20px auto;
+    border-left: 6px solid #4cae4c;
+    border-right: 6px solid #4cae4c;
+    border-radius: 6px;
+    font-weight: bold;
+    max-width: 400px;
+    text-align: center;
+    margin-top: 25px;
+    box-shadow: 0 0 10px rgba(90, 255, 71, 0.7);
+  }
+  
   
 
-  /*Color coordinated status titles
-  /* .statusTitle.watching {
+  
+
+
+   /* Color coordinated status titles
+  .statusTitle.watching { 
     color: #ffd700;
-    text-shadow: 0 0 4px #b8860b, 0 0 8px #ffd700;
   }
   
   .statusTitle.planned {
-    color: #f89e37;
-    text-shadow: 0 0 4px #ffa024, 0 0 8px #ffbf00;
+    color: hsl(23, 92%, 66%);
+
   }
   
   .statusTitle.completed {
     color: #a2ff51;
-    text-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
   }
   
   .statusTitle.dropped {
-    color: #e26958bc;
-    text-shadow: 0 0 5px rgba(255, 76, 76, 0.5);
-  } */
-
-
-
+    color: #bf1600bc;
+  }  */

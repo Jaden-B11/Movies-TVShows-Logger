@@ -16,16 +16,16 @@
     <% for (let status in grouped) { %>
         <section>
           <h2 class="statusTitle <%= status %>">
+            <hr class="stylish-divider">
             <% if (status == 'planned') { %>
                 <%= status.charAt(0).toUpperCase() + status.slice(1, 5) %>ing to Watch
             <% } else { %>
                 <%= status.charAt(0).toUpperCase() + status.slice(1) %>
             <% } %>
-
-        </h2> 
+          </h2> 
       
           <% if (grouped[status].movies.length === 0 && grouped[status].shows.length === 0) { %>
-            <p id="NoMedia">No media in this category.</p>
+            <p id="NoMedia">No media in this category.</p> <br><br><br><br>
           <% } %>
       
           <div class="media-grid">
@@ -66,7 +66,7 @@
       <div id="editMediaModal" class="custom-modal hidden">
         <div class="custom-modal-content" style="box-shadow: 0 0 20px rgba(255, 227, 69, 0.463)">
           <span class="custom-close-button" id="closeEditModal">&times;</span>
-          <h3 id="EditMedia">Edit Media</h3>
+          <h3 id="EditMedia">Edit Status</h3>
           <form method="POST" action="/editMedia" id="editMediaForm">
             <input type="hidden" name="mediaId" id="editMediaId">
             <input type="hidden" name="mediaType" id="editMediaType">
@@ -86,8 +86,17 @@
             <textarea name="comments" id="editComments" rows="3"></textarea>
       
             <br><br>
-            <button type="submit" style="background-color: rgb(161, 188, 44);" class="media-button">Save Changes</button>
+            <div>
+            <button type="submit" id="saveChanges" class="media-button">Save Changes</button>
+            
+           
           </form>
+          <form method="POST" action="/deleteMedia" id="deleteMediaForm" onsubmit="return confirm('Are you sure you want to remove this?');">
+            <input type="hidden" name="mediaId" id="deleteMediaId">
+            <input type="hidden" name="mediaType" id="deleteMediaType">
+            <button type="submit" class="media-button delete-button">Delete</button>
+          </form>  
+                  
         </div>
       </div>
       

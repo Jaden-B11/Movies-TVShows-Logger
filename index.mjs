@@ -205,12 +205,13 @@ app.get('/full-details/:id', isAuthenticated, async (req, res) => {
     const currentID = req.params.id;
     const searchTitle = req.query.title;
     console.log(searchTitle);
+    const success = req.query.success;
     const apiKey = "e3a66506";
 
     const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&i=${currentID}&plot=full`);
     const movie = await response.json();
 
-    res.render('fulldetails.ejs', { movie, searchTitle });
+    res.render('fulldetails.ejs', { movie, searchTitle, success });
 });
 
 app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
@@ -238,7 +239,7 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     let sqlParams = [userId, tvMazeId, showName, showImage, showStatus, comments];
     const [rows] = await conn.query(sql, sqlParams);
 
-    res.redirect(`/full-details/${imdbId}?title=${searchTitle}`);
+    res.redirect(`/full-details/${imdbId}?title=${searchTitle}&success=1`);
 });
 
 app.post('/addEpisode', isAuthenticated, async (req, res) => {
@@ -299,6 +300,7 @@ app.post('/addEpisode', isAuthenticated, async (req, res) => {
 app.get('/addMedia/:id', isAuthenticated, async (req, res) => {
     const currentId = req.params.id;
     const searchTitle = req.query.title;
+    const success = req.query.success;
     const apiKey = "e3a66506";
 
     const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&i=${currentId}&plot=full`);
@@ -324,7 +326,7 @@ app.post('/addMedia/:id', isAuthenticated, async (req, res) => {
     let sqlParams = [userId, imdbId, movieName, movieImage, movieStatus, comments];
     const [rows] = await conn.query(sql, sqlParams);
 
-    res.redirect(`/full-details/${imdbId}?title=${searchTitle}`);
+    res.redirect(`/full-details/${imdbId}?title=${searchTitle}&success=1`);
 });
 
 app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
@@ -384,6 +386,40 @@ app.post('/editMedia', isAuthenticated, async (req, res) => {
 
     res.redirect('/home');
 });
+
+// app.post('/deleteMedia', isAuthenticated, async (req, res) => {
+//     const { mediaId, mediaType } = req.body;
+//     const userId = req.session.userId;
+  
+//     let sql;
+//     if (mediaType === 'movie') {
+//       sql = `DELETE FROM Movies WHERE movieId = ? AND userId = ?`;
+//     } else if (mediaType === 'show') {
+//       sql = `DELETE FROM Shows WHERE showId = ? AND userId = ?`;
+//     }
+  
+//     await conn.query(sql, [mediaId, userId]);
+//     res.redirect('/home');
+//   });
+
+app.post('/deleteMedia', isAuthenticated, async (req, res) => {
+    const mediaId = req.body.mediaId
+    const mediaType = req.body.mediaType
+    const userId = req.session.userId
+    let sql;
+    
+    if(mediaType == 'movie'){
+        sql = `DELETE FROM Movies WHERE movieId = ? AND userId = ?`;
+    } else if (mediaType == 'show') {
+        sql = `DELETE FROM Shows WHERE showId = ? AND userId = ?`;
+    }
+
+    let sqlParams = [mediaId, userId]
+    await conn.query(sql, sqlParams);
+
+    res.redirect('/home')
+  });
+  
 
 function isAuthenticated(req, res, next) {
     if (req.session.userAuthenticated) {
