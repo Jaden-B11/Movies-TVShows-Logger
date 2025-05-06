@@ -76,6 +76,10 @@ const formMediaId = document.getElementById('editMediaId');
 const formMediaType = document.getElementById('editMediaType');
 const formStatus = document.getElementById('editStatus');
 const formComments = document.getElementById('editComments');
+const deleteMediaId = document.getElementById('deleteMediaId');
+const deleteMediaType = document.getElementById('deleteMediaType');
+
+
 
 openEditButtons.forEach(button => {
   button.addEventListener('click', () => {
@@ -83,6 +87,9 @@ openEditButtons.forEach(button => {
     formMediaType.value = button.dataset.type;
     formStatus.value = button.dataset.status;
     formComments.value = button.dataset.comments;
+    deleteMediaId.value = button.dataset.id;
+    deleteMediaType.value = button.dataset.type
+    
 
     editModal.classList.remove('hidden');
   });
