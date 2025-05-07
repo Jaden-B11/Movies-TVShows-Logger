@@ -60,8 +60,8 @@ app.get('/home', isAuthenticated, async (req, res) => {
         dropped: { movies: [], shows: [] },
     };
 
-    console.log(shows);
-    console.log(movies);
+    // console.log(shows);
+    // console.log(movies);
 
     for (let movie of movies) {
         const status = movie.movieStatus?.toLowerCase();
@@ -75,7 +75,7 @@ app.get('/home', isAuthenticated, async (req, res) => {
             grouped.dropped.movies.push(movie);
         }
     }
-    
+
     for (let show of shows) {
         const status = show.showStatus?.toLowerCase();
         if (status === "watching") {
@@ -109,9 +109,16 @@ app.get('/search', isAuthenticated, async (req, res) => {
             const data = await response.json();
 
             if (data.Response === "True") {
-                allMovies = allMovies.concat(data.Search);
+                const filtered = data.Search.filter(item =>
+                    item.Type === "movie" || item.Type === "series"
+                );
+                allMovies = allMovies.concat(filtered);
             } else {
-                return res.render('search.ejs', { movies: null, error: 'No matching results, Try again!', searchTerm: null }); // Search term exists, but no results
+                if (page === 1) {
+                    return res.render('search.ejs', { movies: null, error: 'No matching results, Try again!', searchTerm: null });
+                } else {
+                    break;
+                }
             }
         }
 
@@ -122,9 +129,41 @@ app.get('/search', isAuthenticated, async (req, res) => {
     }
 });
 
+app.get('/viewAddedEpisodes/:id', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    const showId = req.params.id;
 
+    // console.log("UserID: ", userId);
+    // console.log("ShowID: ", showId);
 
+    let sql = `SELECT * FROM Episodes WHERE userId = ? AND showId = ?`;
 
+    const [episodes] = await conn.query(sql, [userId, showId]);
+
+    // console.log("Episodes: ", episodes);
+
+    const grouped = {
+        watching: { episodes: [] },
+        planned: { episodes: [] },
+        completed: { episodes: [] },
+        dropped: { episodes: [] },
+    };
+
+    for (let episode of episodes) {
+        const status = episode.episodeStatus?.toLowerCase();
+        if (status === "watching") {
+            grouped.watching.episodes.push(episode);
+        } else if (status === "planned to watch") {
+            grouped.planned.episodes.push(episode);
+        } else if (status === "completed") {
+            grouped.completed.episodes.push(episode);
+        } else if (status === "dropped") {
+            grouped.dropped.episodes.push(episode);
+        }
+    }
+
+    res.render('viewAddedEpisodes.ejs', { grouped });
+});
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
@@ -221,6 +260,7 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     let showImage = req.body.showImage;
     let showStatus = req.body.showStatus;
     let comments = req.body.comments;
+    let rating = req.body.rating;
 
     const searchTitle = req.body.searchTitle;
 
@@ -231,13 +271,24 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     // gets tvMazeId from api response
     const tvMazeId = parseInt(data.id);
 
-    let sql = `INSERT INTO Shows 
-                (userId, tvMazeId, showName, showImage, showStatus, comments) 
+    // Checks if the user already added the show before
+    const [existingShows] = await conn.query(
+        'SELECT * FROM Shows WHERE tvMazeId = ? AND userId = ?',
+        [tvMazeId, userId]
+    );
+
+    if (existingShows.length > 0) {
+        let sql = `UPDATE Shows SET showStatus = ?, comments = ?, rating = ? WHERE showId = ? and userId = ?`
+        let sqlParams = [showStatus, comments, rating, existingShows[0].showId, userId];
+        const [rows] = await conn.query(sql, sqlParams);
+    } else {
+        let sql = `INSERT INTO Shows 
+                (userId, tvMazeId, showName, showImage, showStatus, comments, rating) 
                 VALUES 
                 (?, ?, ?, ?, ?, ?)`;
-
-    let sqlParams = [userId, tvMazeId, showName, showImage, showStatus, comments];
-    const [rows] = await conn.query(sql, sqlParams);
+        let sqlParams = [userId, tvMazeId, showName, showImage, showStatus, comments, rating];
+        const [rows] = await conn.query(sql, sqlParams);
+    }
 
     res.redirect(`/full-details/${imdbId}?title=${searchTitle}&success=1`);
 });
@@ -246,7 +297,7 @@ app.post('/addEpisode', isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
     const imdbId = req.query.imdbId;
 
-    const { showTvMazeLink, tvMazeId, episodeName, episodeImage, status, comments } = req.body;
+    const { showTvMazeLink, tvMazeId, episodeName, episodeImage, status, comments, rating } = req.body;
 
     // for getting tv show TVMaze id
     const url = showTvMazeLink;
@@ -288,10 +339,10 @@ app.post('/addEpisode', isAuthenticated, async (req, res) => {
 
     // Finally inserts episode into database
     const insertEpisodeSql = `
-        INSERT INTO Episodes (showId, userId, tvMazeId, episodeName, episodeImage, episodeStatus, comments)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO Episodes (showId, userId, tvMazeId, episodeName, episodeImage, episodeStatus, comments, rating)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
-    const episodeParams = [showId, userId, tvMazeId, episodeName, episodeImage, status, comments];
+    const episodeParams = [showId, userId, tvMazeId, episodeName, episodeImage, status, comments, rating];
     await conn.query(insertEpisodeSql, episodeParams);
 
     res.redirect(`/viewEpisodes/${imdbId}`);
@@ -315,15 +366,16 @@ app.post('/addMedia/:id', isAuthenticated, async (req, res) => {
     let movieImage = req.body.movieImage;
     let movieStatus = req.body.movieStatus;
     let comments = req.body.comments;
+    let rating = parseInt(req.body.rating);
 
     const searchTitle = req.body.searchTitle;
 
     let sql = `INSERT INTO Movies 
-                (userId, imdbId, movieName, movieImage, movieStatus, comments) 
+                (userId, imdbId, movieName, movieImage, movieStatus, comments, rating) 
                 VALUES 
-                (?, ?, ?, ?, ?, ?)`;
+                (?, ?, ?, ?, ?, ?, ?)`;
 
-    let sqlParams = [userId, imdbId, movieName, movieImage, movieStatus, comments];
+    let sqlParams = [userId, imdbId, movieName, movieImage, movieStatus, comments, rating];
     const [rows] = await conn.query(sql, sqlParams);
 
     res.redirect(`/full-details/${imdbId}?title=${searchTitle}&success=1`);
@@ -336,11 +388,7 @@ app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
     const response = await fetch(`https://api.tvmaze.com/lookup/shows?imdb=${currentId}`);
     const media = await response.json();
 
-    if (!media || !media.id) {
-        return res.status(404).send("TV show not found for this IMDb ID.");
-    }
-
-    const tvMazeId = media.id;
+    const tvMazeId = parseInt(media.id);
 
     // naruto error where the episode names are in japanese since the english translation is in the alternative lists
     // 
@@ -349,11 +397,13 @@ app.get('/viewEpisodes/:id/', isAuthenticated, async (req, res) => {
     const allEpisodes = await episodesResponse.json();
 
     const seasons = {};
-    allEpisodes.forEach(ep => {
-        const season = ep.season || 1;
-        if (!seasons[season]) seasons[season] = [];
-        seasons[season].push(ep);
-    });
+    for (let episode of allEpisodes) {
+        const season = episode.season || 1;
+        if (!seasons[season]) {
+            seasons[season] = [];
+        }
+        seasons[season].push(episode);
+    }
 
     const totalSeasons = Math.max(...Object.keys(seasons).map(Number));
     const episodes = seasons[selectedSeason] || [];
@@ -374,30 +424,45 @@ app.post('/editMedia', isAuthenticated, async (req, res) => {
     const mediaType = req.body.mediaType;
     const status = req.body.status;
     const comments = req.body.comments;
+    const rating = req.body.rating;
 
     let sql;
-    if(mediaType == 'movie'){
-        sql = `UPDATE Movies SET movieStatus = ?, comments = ? WHERE movieId = ? and userId = ?`
-    } else if (mediaType == 'show'){
-        sql = `UPDATE Shows SET showStatus = ?, comments = ? WHERE showId = ? AND userId = ?`;
+    if (mediaType == 'movie') {
+        sql = `UPDATE Movies SET movieStatus = ?, comments = ?, rating = ? WHERE movieId = ? and userId = ?`
+    } else if (mediaType == 'show') {
+        sql = `UPDATE Shows SET showStatus = ?, comments = ?, rating = ? WHERE showId = ? AND userId = ?`;
     }
-    let sqlParams = [status, comments, mediaId, userId]
+    let sqlParams = [status, comments, rating, mediaId, userId]
     await conn.query(sql, sqlParams);
 
     res.redirect('/home');
 });
 
+// app.post('/editEpisode', isAuthenticated, async (req, res) => {
+//     const userId = req.session.userId;
+
+//     const mediaId = req.body.mediaId;
+//     const status = req.body.status;
+//     const comments = req.body.comments;
+
+//     let sql = `UPDATE EPISODES SET episodeStatus = ?, comments = ? WHERE showId = ? AND userId = ?`;
+//     let sqlParams = [status, comments, mediaId, userId]
+//     await conn.query(sql, sqlParams);
+
+//     res.redirect('/home');
+// });
+
 // app.post('/deleteMedia', isAuthenticated, async (req, res) => {
 //     const { mediaId, mediaType } = req.body;
 //     const userId = req.session.userId;
-  
+
 //     let sql;
 //     if (mediaType === 'movie') {
 //       sql = `DELETE FROM Movies WHERE movieId = ? AND userId = ?`;
 //     } else if (mediaType === 'show') {
 //       sql = `DELETE FROM Shows WHERE showId = ? AND userId = ?`;
 //     }
-  
+
 //     await conn.query(sql, [mediaId, userId]);
 //     res.redirect('/home');
 //   });
@@ -407,8 +472,8 @@ app.post('/deleteMedia', isAuthenticated, async (req, res) => {
     const mediaType = req.body.mediaType
     const userId = req.session.userId
     let sql;
-    
-    if(mediaType == 'movie'){
+
+    if (mediaType == 'movie') {
         sql = `DELETE FROM Movies WHERE movieId = ? AND userId = ?`;
     } else if (mediaType == 'show') {
         sql = `DELETE FROM Shows WHERE showId = ? AND userId = ?`;
@@ -418,8 +483,18 @@ app.post('/deleteMedia', isAuthenticated, async (req, res) => {
     await conn.query(sql, sqlParams);
 
     res.redirect('/home')
-  });
-  
+});
+
+// app.post('/deleteEpisode', isAuthenticated, async (req, res) => {
+//     const mediaId = req.body.mediaId
+//     const userId = req.session.userId
+
+//     let sql = `DELETE FROM Episodes WHERE showId = ? AND userId = ?`;
+//     let sqlParams = [mediaId, userId]
+//     await conn.query(sql, sqlParams);
+
+//     res.redirect('/home')
+// });
 
 function isAuthenticated(req, res, next) {
     if (req.session.userAuthenticated) {

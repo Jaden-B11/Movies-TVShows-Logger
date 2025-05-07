@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <link rel="stylesheet" href="/css/style.css">
+    
+</head>
+<body>
+
+    <%- include("partials/nav.ejs") %>
+
+    <% for (let status in grouped) { %>
+        <section>
+          <h2 class="statusTitle <%= status %>">
+            <hr class="stylish-divider">
+            <% if (status == 'planned') { %>
+                <%= status.charAt(0).toUpperCase() + status.slice(1, 5) %>ing to Watch
+            <% } else { %>
+                <%= status.charAt(0).toUpperCase() + status.slice(1) %>
+            <% } %>
+          </h2> 
+      
+          <% if (grouped[status].episodes.length === 0) { %>
+            <p id="NoMedia">No added episodes in this category.</p> <br><br><br><br>
+          <% } %>
+      
+          <div class="media-grid">
+            <% for (let episode of grouped[status].episodes) { %>
+              <div class="media-card">
+                <img src="<%= episode.episodeImage %>" alt="<%= episode.episodeName %> Image" onerror="this.onerror=null; this.src='/img/noimage.png';">                <p><b><%= episode.episodeName %></b></p> 
+                <% if (episode.comments) { %>
+                  <p class="comments"><%= episode.comments %> </p>
+                <% } %>  
+                <button class="media-button openEditModal"
+                    data-showId="<%= episode.showId %>"
+                    data-id="<%= episode.episodeId %>"
+                    data-type="episode"
+                    data-name="<%= episode.episodeName %>"
+                    data-status="<%= episode.episodeStatus %>"
+                    data-comments="<%= episode.comments %>">
+                    Edit
+                </button>
+              </div>
+            <% } %>
+          </div>
+        </section>
+      <% } %>
+      
+      <div id="editMediaModal" class="custom-modal hidden">
+        <div class="custom-modal-content" style="box-shadow: 0 0 20px rgba(255, 227, 69, 0.463)">
+          <span class="custom-close-button" id="closeEditModal">&times;</span>
+          <h3 id="EditMedia">Edit Status</h3>
+      
+          <form method="POST" action="/editEpisode" id="editMediaForm">
+            <input type="hidden" name="mediaId" id="editMediaId">
+            <label>Status:</label><br>
+            <select name="status" id="editStatus" required>
+              <option value="">Select Status</option>
+              <option value="Watching">Watching</option>
+              <option value="Planned to Watch">Planned to Watch</option>
+              <option value="Completed">Completed</option>
+              <option value="Dropped">Dropped</option>
+            </select>
+      
+            <br><br>
+            <label>Comment:</label><br>
+            <textarea name="comments" id="editComments" rows="3"></textarea>
+      
+            <br><br>
+            <button type="submit" class="media-button">Save Changes</button>
+          </form>
+      
+          <form method="POST" action="/deleteEpisode" id="deleteMediaForm" onsubmit="return confirm('Are you sure you want to remove this?');">
+            <input type="hidden" name="mediaId" id="deleteMediaId">
+            <button type="submit" class="media-button delete-button">Delete</button>
+          </form>
+        </div>
+      </div>
+      
+
+      <script src="/js/script.js"></script>
+</body>
+</html>

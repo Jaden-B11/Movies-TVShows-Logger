@@ -14,13 +14,17 @@
   <%- include("partials/nav.ejs") %>
 
     <% 
-      function formatDate(dateStr) { 
-        const date=new Date(dateStr); 
-        if (isNaN(date)) {
-          return 'N/A'; 
-        }
-        return date.toLocaleDateString('en-US', { year: 'numeric' , month: 'long' , day: 'numeric' }); 
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return isNaN(date) ? 'N/A' : date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
       }
+      episodes.forEach(ep => {
+        ep.formattedAirDate = formatDate(ep.airdate);
+      });
     %>
 
 
@@ -44,9 +48,7 @@
             </div>
 
             <div class="episode-meta">
-              <p><strong>Air Date:</strong>
-                <%= formatDate(episode.airdate) %>
-              </p>
+              <p><strong>Air Date:</strong> <%= episode.formattedAirDate %></p>
               <p><strong>Runtime:</strong>
                 <%= episode.runtime && episode.runtime !=='N/A' ? episode.runtime + ' minutes' : 'N/A' %>
               </p>
@@ -87,7 +89,7 @@
       
             <div class="episode-modal-meta" style="margin-top: 1rem;">
               <label for="status"><strong class="episodeStatusLabel">Status:</strong></label><br>
-              <select id="status" name="status" class="episodeStatus">
+              <select id="status" name="status" class="episodeStatus" required>
                 <option value="">Select Status</option>
                 <option value="Watching">Watching</option>
                 <option value="Planned to Watch">Planned to Watch</option>
@@ -103,10 +105,16 @@
               <textarea id="comments" name="comments" class="episodeComments" placeholder="Add your notes..."></textarea>
             </div>
             <br>
+
+            <div class="episode-modal-meta" style="margin-top: 1rem;">
+              <label for="comments"><strong class="episodeRatingLabel">Rating:</strong></label>
+              <input type="number" name="rating" id="rating" class="episodeComments" placeholder="?/10" required>
+            </div>
+            <br>
       
             <div class="modal-footer" style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px">
-              <button type="submit" class="media-button">Add TV Episode</button>
-              <button type="button" class="media-button" id="cancelModal">Cancel</button>
+              <button type="submit" id="saveChanges" class="media-button">Add TV Episode</button>
+              <button type="button" class="media-button cancel-button" id="cancelModal">Cancel</button>
             </div>
           </form>
         </div>
@@ -135,8 +143,7 @@
 
 
       <div style="text-align: center; margin-top: 20px;">
-        <a id="backtoSearchBtn" href="/full-details/<%= currentId %>?title=<%= searchTitle %>">⬅ Back to
-          SeriesDescription</a>
+        <a id="backtoSearchBtn" href="/full-details/<%= currentId %>?title=<%= searchTitle %>">⬅ Back to Series Description</a>
       </div>
 
       <script src="/js/script.js"></script>

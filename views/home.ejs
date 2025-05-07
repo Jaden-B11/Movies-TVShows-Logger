@@ -31,15 +31,22 @@
           <div class="media-grid">
             <% for (let movie of grouped[status].movies) { %>
               <div class="media-card">
-                <img src="<%= movie.movieImage %>" alt="Movie Image">
-                <p><b><%= movie.movieName %></b></p> <p class="comments"><%= movie.comments %></p>
+                <img src="<%= movie.movieImage %>" alt="Movie Image" onerror="this.onerror=null; this.src='/img/noimage.png';">
+                <p><b><%= movie.movieName %></b></p> 
+                <% if (movie.comments) { %>
+                  <p class="comments"><%= movie.comments %></p>
+                <% } %>  
+                <% if (movie.rating === 0 || movie.rating > 0) { %>
+                  <p class="rating"><%= movie.rating %>/10 Rating</p>
+                <% } %>                
 
                 <button class="media-button openEditModal"
                     data-id="<%= movie.movieId %>"
                     data-type="movie"
                     data-name="<%= movie.movieName %>"
                     data-status="<%= movie.movieStatus %>"
-                    data-comments="<%= movie.comments %>">
+                    data-comments="<%= movie.comments %>"
+                    data-rating="<%= movie.rating %>">
                     Edit
                 </button>
               </div>
@@ -47,14 +54,22 @@
       
             <% for (let show of grouped[status].shows) { %>
               <div class="media-card">
-                <img src="<%= show.showImage %>" alt="Show Image">
-                <p><b><%= show.showName %></b></p> <p> <p class="comments"><%= show.comments %> </p>
+                <img src="<%= show.showImage %>" alt="Show Image" onerror="this.onerror=null; this.src='/img/noimage.png';">
+                <p><b><%= show.showName %></b></p> 
+                <% if (show.comments) { %>
+                  <p class="comments"><%= show.comments %> </p>
+                <% } %> 
+                <% if (show.rating === 0 || show.rating > 0) { %>
+                  <p class="rating"><%= show.rating %>/10 Rating</p>
+                <% } %>   
+                <!-- <button class="media-button" onclick="window.location.href='/viewAddedEpisodes/<%= show.showId %>'">View Added Episodes</button> -->
                 <button class="media-button openEditModal"
                     data-id="<%= show.showId %>"
                     data-type="show"
                     data-name="<%= show.showName %>"
                     data-status="<%= show.showStatus %>"
-                    data-comments="<%= show.comments %>">
+                    data-comments="<%= show.comments %>"
+                    data-rating="<%= show.rating %>">
                     Edit
                 </button>
               </div>
@@ -84,6 +99,10 @@
       
             <label>Comment:</label><br>
             <textarea name="comments" id="editComments" rows="3"></textarea>
+            <br><br>
+
+            <label>Rating:</label><br>
+            <input type="number" name="rating" id="editRating" placeholder="?/10" required>
       
             <br><br>
             <div>
