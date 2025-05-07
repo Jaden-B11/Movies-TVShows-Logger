@@ -260,7 +260,7 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
     let showImage = req.body.showImage;
     let showStatus = req.body.showStatus;
     let comments = req.body.comments;
-    let rating = req.body.rating;
+    let rating = parseInt(req.body.rating);
 
     const searchTitle = req.body.searchTitle;
 
@@ -285,7 +285,7 @@ app.post('/addSeries/:id', isAuthenticated, async (req, res) => {
         let sql = `INSERT INTO Shows 
                 (userId, tvMazeId, showName, showImage, showStatus, comments, rating) 
                 VALUES 
-                (?, ?, ?, ?, ?, ?)`;
+                (?, ?, ?, ?, ?, ?, ?)`;
         let sqlParams = [userId, tvMazeId, showName, showImage, showStatus, comments, rating];
         const [rows] = await conn.query(sql, sqlParams);
     }
@@ -297,7 +297,8 @@ app.post('/addEpisode', isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
     const imdbId = req.query.imdbId;
 
-    const { showTvMazeLink, tvMazeId, episodeName, episodeImage, status, comments, rating } = req.body;
+    const { showTvMazeLink, tvMazeId, episodeName, episodeImage, status, comments} = req.body;
+    const rating = parseInt(req.body.rating);
 
     // for getting tv show TVMaze id
     const url = showTvMazeLink;
@@ -424,7 +425,7 @@ app.post('/editMedia', isAuthenticated, async (req, res) => {
     const mediaType = req.body.mediaType;
     const status = req.body.status;
     const comments = req.body.comments;
-    const rating = req.body.rating;
+    const rating = parseInt(req.body.rating);
 
     let sql;
     if (mediaType == 'movie') {
