@@ -50,8 +50,15 @@
                         </div>
     
                         <br>
+
+                        <div class="form-group">
+                            <label for="rating">Rating:</label>
+                            <input type="number" name="rating" id="rating" class="rating" placeholder="?/10" required>
+                        </div>
+
+                        <br>
     
-                        <button class="media-button" type="submit">Add Media</button>
+                        <button id="saveChanges" class="media-button" type="submit">Add Media</button>
                     </form>
                 <% } else { %>
                     <form class="addMediaForm" action="/addMedia/<%= movie.imdbID %>" method="POST">
@@ -77,6 +84,13 @@
                         <div class="form-group">
                             <label for="comments">Comments:</label>
                             <textarea name="comments" id="comments" class="comments" rows="3" placeholder="Add your notes..."></textarea>
+                        </div>
+
+                        <br>
+
+                        <div class="form-group">
+                            <label for="rating">Rating:</label>
+                            <input type="number" name="rating" id="rating" class="comments" placeholder="?/10" required>
                         </div>
     
                         <br>

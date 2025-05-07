@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeModalBtn = document.getElementById('closeModal');
   const cancelModalBtn = document.getElementById('cancelModal');
 
-  // Modal input fields
+  // Modal input fields when creating episode
   const formShowId = document.getElementById('formShowTvMazeLink');
   const formEpisodeId = document.getElementById('formEpisodeTvMazeId');
   const formEpisodeName = document.getElementById('formEpisodeName');
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   episodeButtons.forEach(button => {
     button.addEventListener('click', () => {
-      // Set form values from button data attributes
       formShowId.value = button.getAttribute('data-show-tvmaze-id');
       formEpisodeId.value = button.getAttribute('data-episode-tvmaze-id');
       formEpisodeName.value = button.getAttribute('data-episode-name');
@@ -76,6 +75,7 @@ const formMediaId = document.getElementById('editMediaId');
 const formMediaType = document.getElementById('editMediaType');
 const formStatus = document.getElementById('editStatus');
 const formComments = document.getElementById('editComments');
+const formRating = document.getElementById('editRating');
 const deleteMediaId = document.getElementById('deleteMediaId');
 const deleteMediaType = document.getElementById('deleteMediaType');
 
@@ -87,6 +87,7 @@ openEditButtons.forEach(button => {
     formMediaType.value = button.dataset.type;
     formStatus.value = button.dataset.status;
     formComments.value = button.dataset.comments;
+    formRating.value = button.dataset.rating;
     deleteMediaId.value = button.dataset.id;
     deleteMediaType.value = button.dataset.type
     
@@ -98,4 +99,3 @@ openEditButtons.forEach(button => {
 closeEditBtn?.addEventListener('click', () => {
   editModal.classList.add('hidden');
 });
-
